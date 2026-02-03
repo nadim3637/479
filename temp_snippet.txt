@@ -1,0 +1,101 @@
+                          <RefreshCw size={16} /> Force Update
+                      </button>
+                      <button onClick={handleSaveSettings} className="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg hover:bg-green-700 flex items-center gap-2"><Save size={16} /> Save Settings</button>
+                  </div>
+              </div>
+              
+              <div className="flex justify-end mb-4 px-2">
+                  <button 
+                      onClick={() => onToggleDarkMode && onToggleDarkMode(!isDarkMode)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${isDarkMode ? 'bg-slate-800 text-yellow-400 border border-slate-700' : 'bg-white text-slate-600 border border-slate-200'}`}
+                  >
+                      {isDarkMode ? <Sparkles size={14} /> : <Zap size={14} />}
+                      {isDarkMode ? 'Dark Mode On' : 'Dark Mode Off'}
+                  </button>
+              </div>
+
+              {/* 6-ZONE LAYOUT */}
+              {!activeZone && (
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+                  <button onClick={() => { setActiveZone('USERS'); setActiveTab('USERS'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'USERS' ? 'bg-blue-600 text-white border-blue-600 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-blue-50 text-slate-600'}`}>
+                      <Users size={24} />
+                      <span className="font-black text-xs uppercase">USERS</span>
+                  </button>
+                  <button onClick={() => { setActiveZone('CONTENT'); setActiveTab('SUBJECTS_MGR'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'CONTENT' ? 'bg-purple-600 text-white border-purple-600 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-purple-50 text-slate-600'}`}>
+                      <BookOpen size={24} />
+                      <span className="font-black text-xs uppercase">CONTENT</span>
+                  </button>
+                  <button onClick={() => { setActiveZone('AI'); setActiveTab('CONFIG_AI'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'AI' ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-indigo-50 text-slate-600'}`}>
+                      <BrainCircuit size={24} />
+                      <span className="font-black text-xs uppercase">AI AUTO</span>
+                  </button>
+                  <button onClick={() => { setActiveZone('MONETIZATION'); setActiveTab('SUBSCRIPTION_MANAGER'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'MONETIZATION' ? 'bg-green-600 text-white border-green-600 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-green-50 text-slate-600'}`}>
+                      <Banknote size={24} />
+                      <span className="font-black text-xs uppercase">MONEY</span>
+                  </button>
+                  <button onClick={() => { setActiveZone('SYSTEM'); setActiveTab('CONFIG_GENERAL'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'SYSTEM' ? 'bg-slate-800 text-white border-slate-800 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-slate-100 text-slate-600'}`}>
+                      <Settings size={24} />
+                      <span className="font-black text-xs uppercase">SYSTEM</span>
+                  </button>
+                  <button onClick={() => { setActiveZone('ANALYTICS'); setActiveTab('LEADERBOARD'); }} className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${activeZone === 'ANALYTICS' ? 'bg-orange-600 text-white border-orange-600 shadow-lg scale-105' : 'bg-white border-slate-200 hover:bg-orange-50 text-slate-600'}`}>
+                      <BarChart3 size={24} />
+                      <span className="font-black text-xs uppercase">LOGS</span>
+                  </button>
+              </div>
+              )}
+
+              {activeZone ? (
+                  <div className="animate-in fade-in slide-in-from-right">
+                      <div className="flex items-center gap-4 mb-6">
+                          <button onClick={() => setActiveZone(null)} className="bg-slate-100 p-2 rounded-full hover:bg-slate-200 font-bold flex items-center gap-2 px-4 text-xs text-slate-600">
+                              <ArrowLeft size={14} /> Back to Zones
+                          </button>
+                          <h3 className="text-xl font-black text-slate-800">{activeZone} ZONE</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                          {activeZone === 'USERS' && (
+                              <>
+                                  {(hasPermission('VIEW_USERS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Users} label="All Users" onClick={() => setActiveTab('USERS')} color="blue" count={users.length} />}
+                                  {(hasPermission('MANAGE_SUB_ADMINS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={ShieldCheck} label="Sub-Admins" onClick={() => setActiveTab('SUB_ADMINS')} color="indigo" count={users.filter(u => u.role === 'SUB_ADMIN').length} />}
+                                  {(hasPermission('APPROVE_LOGIN_REQS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Key} label="Login Reqs" onClick={() => setActiveTab('ACCESS')} color="purple" count={recoveryRequests.filter(r => r.status === 'PENDING').length} />}
+                                  {(hasPermission('VIEW_DEMANDS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Megaphone} label="Demands" onClick={() => setActiveTab('DEMAND')} color="orange" count={demands.length} />}
+                              </>
+                          )}
+
+                          {activeZone === 'CONTENT' && (
+                              <>
+                                  {(hasPermission('MANAGE_SYLLABUS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Book} label="Subjects" onClick={() => setActiveTab('SUBJECTS_MGR')} color="emerald" />}
+                                  <DashboardCard icon={Layers} label="Syllabus" onClick={() => setActiveTab('SYLLABUS_MANAGER')} color="blue" />
+                                  <DashboardCard icon={FileText} label="PDF Manager" onClick={() => setActiveTab('CONTENT_PDF')} color="red" />
+                                  <DashboardCard icon={Video} label="Video Manager" onClick={() => setActiveTab('CONTENT_VIDEO')} color="rose" />
+                                  <DashboardCard icon={Headphones} label="Audio Manager" onClick={() => setActiveTab('CONTENT_AUDIO')} color="pink" />
+                                  <DashboardCard icon={CheckCircle} label="MCQ Manager" onClick={() => setActiveTab('CONTENT_MCQ')} color="green" />
+                                  <DashboardCard icon={ListChecks} label="Test Builder" onClick={() => setActiveTab('CONTENT_TEST')} color="purple" />
+                                  <DashboardCard icon={Upload} label="Bulk Upload" onClick={() => setActiveTab('BULK_UPLOAD')} color="cyan" />
+                                  <DashboardCard icon={Trash2} label="Recycle Bin" onClick={() => setActiveTab('RECYCLE')} color="slate" />
+                                  <DashboardCard icon={Youtube} label="Universal Playlist" onClick={() => setActiveTab('UNIVERSAL_PLAYLIST')} color="red" />
+                                  <DashboardCard icon={Code2} label="Blogger Hub" onClick={() => setActiveTab('BLOGGER_HUB')} color="orange" />
+                              </>
+                          )}
+
+                          {activeZone === 'AI' && (
+                              <>
+                                  <DashboardCard icon={Bot} label="AI Settings" onClick={() => setActiveTab('CONFIG_AI')} color="indigo" />
+                                  <DashboardCard icon={BrainCircuit} label="AI Automation" onClick={() => setActiveTab('APP_MODES')} color="purple" />
+                                  <DashboardCard icon={Sparkles} label="Admin AI Agent" onClick={() => setShowAdminAi(true)} color="green" />
+                                  <DashboardCard icon={MessageSquare} label="AI Logs" onClick={() => setActiveTab('UNIVERSAL_AI_QA')} color="slate" />
+                              </>
+                          )}
+
+                          {activeZone === 'MONETIZATION' && (
+                              <>
+                                  {(hasPermission('MANAGE_SUBS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={CreditCard} label="Subscriptions" onClick={() => setActiveTab('SUBSCRIPTION_MANAGER')} color="purple" />}
+                                  {(hasPermission('MANAGE_PLANS') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Crown} label="Plans Editor" onClick={() => setActiveTab('SUBSCRIPTION_PLANS_EDITOR')} color="blue" />}
+                                  {(hasPermission('MANAGE_GIFT_CODES') || currentUser?.role === 'ADMIN') && <DashboardCard icon={Gift} label="Gift Codes" onClick={() => setActiveTab('CODES')} color="pink" />}
+                                  <DashboardCard icon={Banknote} label="Pricing" onClick={() => setActiveTab('PRICING_MGMT')} color="green" />
+                              </>
+                          )}
+
+                          {activeZone === 'SYSTEM' && (
+                              <>
